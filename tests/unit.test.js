@@ -1,4 +1,5 @@
 const cheerio = require('cheerio');
+const { replaceWordPreservingCase } = require('../utils/text');
 const { sampleHtmlWithYale } = require('./test-utils');
 
 describe('Yale to Fale replacement logic', () => {
@@ -69,7 +70,7 @@ describe('Yale to Fale replacement logic', () => {
       return this.nodeType === 3;
     }).each(function() {
       const text = $(this).text();
-      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+      const newText = replaceWordPreservingCase(text, 'Yale', 'Fale');
       if (text !== newText) {
         $(this).replaceWith(newText);
       }
@@ -94,7 +95,7 @@ describe('Yale to Fale replacement logic', () => {
       return this.nodeType === 3;
     }).each(function() {
       const text = $(this).text();
-      const newText = text.replace(/Yale/gi, 'Fale');
+      const newText = replaceWordPreservingCase(text, 'Yale', 'Fale');
       if (text !== newText) {
         $(this).replaceWith(newText);
       }
