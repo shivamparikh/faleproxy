@@ -58,7 +58,7 @@ describe('Yale to Fale replacement logic', () => {
       </head>
       <body>
         <h1>Hello World</h1>
-        <p>This is a test page with no Yale references.</p>
+        <p>This is a test page with no university references.</p>
       </body>
       </html>
     `;
@@ -81,7 +81,7 @@ describe('Yale to Fale replacement logic', () => {
     // Content should remain the same
     expect(modifiedHtml).toContain('<title>Test Page</title>');
     expect(modifiedHtml).toContain('<h1>Hello World</h1>');
-    expect(modifiedHtml).toContain('<p>This is a test page with no Yale references.</p>');
+    expect(modifiedHtml).toContain('<p>This is a test page with no university references.</p>');
   });
 
   test('should handle case-insensitive replacements', () => {
