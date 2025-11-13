@@ -17,14 +17,11 @@ describe('Integration Tests', () => {
     nock.disableNetConnect();
     nock.enableNetConnect('127.0.0.1');
     
-    // Create a temporary test app file
-    await execAsync('cp app.js app.test.js');
-    await execAsync(`sed -i '' 's/const PORT = 3001/const PORT = ${TEST_PORT}/' app.test.js`);
-    
-    // Start the test server
-    server = require('child_process').spawn('node', ['app.test.js'], {
+    // Start the test server with overridden PORT via environment
+    server = require('child_process').spawn('node', ['app.js'], {
       detached: true,
-      stdio: 'ignore'
+      stdio: 'ignore',
+      env: { ...process.env, PORT: String(TEST_PORT) }
     });
     
     // Give the server time to start
@@ -36,7 +33,6 @@ describe('Integration Tests', () => {
     if (server && server.pid) {
       process.kill(-server.pid);
     }
-    await execAsync('rm app.test.js');
     nock.cleanAll();
     nock.enableNetConnect();
   });
@@ -48,7 +44,7 @@ describe('Integration Tests', () => {
       .reply(200, sampleHtmlWithYale);
     
     // Make a request to our proxy app
-    const response = await axios.post(`http://localhost:${TEST_PORT}/fetch`, {
+    const response = await axios.post(`http://127.0.0.1:${TEST_PORT}/fetch`, {
       url: 'https://example.com/'
     });
     
@@ -78,7 +74,7 @@ describe('Integration Tests', () => {
 
   test('Should handle invalid URLs', async () => {
     try {
-      await axios.post(`http://localhost:${TEST_PORT}/fetch`, {
+      await axios.post(`http://127.0.0.1:${TEST_PORT}/fetch`, {
         url: 'not-a-valid-url'
       });
       // Should not reach here
@@ -90,7 +86,7 @@ describe('Integration Tests', () => {
 
   test('Should handle missing URL parameter', async () => {
     try {
-      await axios.post(`http://localhost:${TEST_PORT}/fetch`, {});
+      await axios.post(`http://127.0.0.1:${TEST_PORT}/fetch`, {});
       // Should not reach here
       expect(true).toBe(false);
     } catch (error) {

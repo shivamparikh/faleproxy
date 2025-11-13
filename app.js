@@ -2,9 +2,10 @@ const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const path = require('path');
+const { replaceWordPreservingCase } = require('./utils/text');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Middleware to parse request bodies
 app.use(express.json());
@@ -53,14 +54,14 @@ app.post('/fetch', async (req, res) => {
     }).each(function() {
       // Replace text content but not in URLs or attributes
       const text = $(this).text();
-      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+      const newText = replaceWordPreservingCase(text, 'Yale', 'Fale');
       if (text !== newText) {
         $(this).replaceWith(newText);
       }
     });
     
     // Process title separately
-    const title = $('title').text().replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+    const title = replaceWordPreservingCase($('title').text(), 'Yale', 'Fale');
     $('title').text(title);
     
     return res.json({ 
